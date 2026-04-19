@@ -168,6 +168,32 @@ img {
   padding: 22px 24px;
 }
 
+.error-card {
+  border-color: rgba(195, 92, 47, 0.28);
+  background: linear-gradient(180deg, rgba(255, 244, 238, 0.96), rgba(255, 250, 241, 0.96));
+}
+
+.error-detail {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(195, 92, 47, 0.08);
+  color: #7f3417;
+  font-weight: 700;
+}
+
+.error-list {
+  margin: 14px 0 0;
+  padding-left: 1.2rem;
+  color: var(--muted);
+}
+
+.error-hint {
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
 .panel h2,
 .section-head h2,
 .hotel-content h3,
