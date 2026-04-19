@@ -18,6 +18,12 @@
 - 自分のPCがオフでもページは見られる
 - 直前空室のような鮮度が必要なテーマと相性がよい
 
+## GitHub Pages の前提
+
+- 2026年4月時点の GitHub 公式では、`GitHub Free` で GitHub Pages を使う場合は `public repository` が前提です
+- いまの `choritomo/rakuten-travel` は `private` なので、公開前に `public` へ変更する必要があります
+- 公開するとコード、Actions の履歴、ログも外部から見えるようになります
+
 ## この方式の弱み
 
 - サーバ生成の静的記事よりSEOは弱い
@@ -85,8 +91,9 @@ python -m http.server 8000 --directory dist
 
 1. 楽天側で `Webアプリケーション` を新規作成する
 2. GitHub Secrets に3つの値を登録する
-3. GitHub Pages を有効化する
-4. リポジトリを push して公開する
+3. GitHub リポジトリを `public` に変更する
+4. GitHub Pages を有効化する
+5. `Actions > Generate travel site > Run workflow` で初回デプロイする
 
 ## 参考
 
@@ -96,3 +103,5 @@ python -m http.server 8000 --directory dist
 - [楽天トラベルランキングAPI](https://webservice.rakuten.co.jp/documentation/hotel-ranking)
 - [Rakuten Web Service クレジット表示](https://webservice.rakuten.co.jp/guide/credit)
 - [GitHub-hosted runners の IP に関する説明](https://docs.github.com/en/actions/reference/runners/github-hosted-runners)
+- [GitHub Pages limits](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits)
+- [Setting repository visibility](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/managing-repository-settings/setting-repository-visibility)
