@@ -217,6 +217,8 @@
         cleanup();
         reject(new Error("楽天APIの読み込みに失敗しました。"));
       };
+      // Rakuten may validate the full page URL for Web applications, not just the origin.
+      script.referrerPolicy = "unsafe-url";
       script.src = `${url}?${query.toString()}`;
       document.body.appendChild(script);
     });
