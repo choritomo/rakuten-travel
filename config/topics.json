@@ -1,0 +1,61 @@
+[
+  {
+    "slug": "last-minute-onsen",
+    "title_template": "{checkin_md}に泊まれる空室あり温泉宿3選",
+    "headline": "直前でも狙いやすい温泉宿",
+    "description": "楽天トラベルの温泉ランキングを種にして、次の週末に空室がある宿だけを抽出します。風呂評価と総合評価の両方を見て、予約意図が強い記事に寄せています。",
+    "source": "ranking",
+    "ranking_genre": "onsen",
+    "focus_metric": "bath_average",
+    "focus_label": "風呂評価",
+    "focus_min": 4.0,
+    "top_n": 3,
+    "max_candidates": 6,
+    "stay_strategy": "next_saturday",
+    "adult_num": 2,
+    "child_num": 0,
+    "squeeze_conditions": [
+      "onsen"
+    ]
+  },
+  {
+    "slug": "family-breakfast",
+    "title_template": "{checkin_md}に泊まれる朝食評価が高いファミリー向けホテル3選",
+    "headline": "朝食重視の家族旅行向けホテル",
+    "description": "ファミリー系キーワード検索と朝食条件を組み合わせ、食事評価が高い宿を優先します。完全自動でも比較軸がぶれにくいテーマです。",
+    "source": "keyword",
+    "keywords": [
+      "ファミリー",
+      "子連れ",
+      "キッズ"
+    ],
+    "focus_metric": "meal_average",
+    "focus_label": "食事評価",
+    "focus_min": 4.0,
+    "top_n": 3,
+    "max_candidates": 6,
+    "stay_strategy": "next_saturday",
+    "adult_num": 2,
+    "child_num": 1,
+    "squeeze_conditions": [
+      "breakfast"
+    ]
+  },
+  {
+    "slug": "premium-getaway",
+    "title_template": "{checkin_md}に空室がある高評価ご褒美ホテル3選",
+    "headline": "単価の高いご褒美ホテル",
+    "description": "高級ホテルランキングをもとに、総合評価と料金感のバランスがよい施設を選びます。旅行単価が上がりやすく、少ない成約でも報酬が乗りやすい枠です。",
+    "source": "ranking",
+    "ranking_genre": "premium",
+    "focus_metric": "review_average",
+    "focus_label": "総合評価",
+    "focus_min": 4.2,
+    "top_n": 3,
+    "max_candidates": 6,
+    "stay_strategy": "next_friday",
+    "adult_num": 2,
+    "child_num": 0,
+    "squeeze_conditions": []
+  }
+]
