@@ -47,10 +47,13 @@ GitHub リポジトリの `Settings > Secrets and variables > Actions` に次を
 
 ## 5. GitHub Pages の設定
 
+無料で GitHub Pages を使うなら、先にリポジトリを `public` にします。
+
 1. `Settings > Pages` を開く
 2. `Build and deployment` の Source を `GitHub Actions` にする
-3. このリポジトリを push する
-4. Actions の `Generate travel site` が通るのを待つ
+3. まだ `private` なら `Settings > General > Danger Zone > Change repository visibility` から `public` に変える
+4. `Actions > Generate travel site > Run workflow` を押す
+5. `Deploy to GitHub Pages` が通るのを待つ
 
 ## 6. ローカルでの確認
 
@@ -107,6 +110,7 @@ python -m http.server 8000 --directory dist
 
 よくある原因:
 
+- リポジトリが `private` のまま
 - Webアプリではなくバックエンドアプリのキーを使っている
 - 許可されたWebサイトが違う
 - GitHub Pages のURLと楽天の設定がずれている
