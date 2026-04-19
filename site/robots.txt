@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://choritomo.github.io/rakuten-travel/sitemap.xml
