@@ -38,18 +38,8 @@
       const liveArticle = await loadLiveArticle(topic);
       renderArticle(page, liveArticle, "live", "最新の空室候補を取得しました。");
     } catch (error) {
-      if (demoArticle) {
-        renderArticle(
-          page,
-          demoArticle,
-          "fallback",
-          "ライブ取得に失敗したため、デモデータを表示しています。"
-        );
-        setStatus(page, "ライブ取得に失敗しました。", normalizeError(error));
-        return;
-      }
       setStatus(page, "ライブ取得に失敗しました。", normalizeError(error));
-      setLoadingCard(page, "データを取得できませんでした。時間をおいて再読み込みしてください。");
+      renderLiveError(page, normalizeError(error), demoArticle);
     }
   }
 
@@ -215,6 +205,11 @@
 
       window[callbackName] = (payload) => {
         cleanup();
+        const apiError = extractApiError(payload);
+        if (apiError) {
+          reject(new Error(apiError));
+          return;
+        }
         resolve(payload);
       };
 
@@ -531,6 +526,35 @@
 </article>`;
   }
 
+  function renderLiveError(page, detail, demoArticle) {
+    const resultsElement = page.querySelector("[data-results]");
+    const notesElement = page.querySelector("[data-notes]");
+    if (resultsElement) {
+      resultsElement.innerHTML = `
+<article class="panel loading-card error-card">
+  <h3>ライブ取得に失敗しました</h3>
+  <p>今は楽天トラベルの最新候補を取得できていません。設定を直したあとで再読み込みしてください。</p>
+  <p class="error-detail">${escapeHtml(detail)}</p>
+  <ul class="error-list">
+    <li>GitHub Secrets の <code>RAKUTEN_APPLICATION_ID</code> と <code>RAKUTEN_ACCESS_KEY</code> が、楽天の <code>Webアプリケーション</code> の値か確認する</li>
+    <li>楽天側の許可されたWebサイトに <code>choritomo.github.io</code> が入っているか確認する</li>
+    <li>Secrets を直したら GitHub Actions の <code>Generate travel site</code> を再実行する</li>
+  </ul>
+  ${
+    demoArticle
+      ? `<p class="error-hint">参考: いま表示していないデモ記事タイトルは「${escapeHtml(demoArticle.title)}」です。</p>`
+      : ""
+  }
+</article>`;
+    }
+    if (notesElement) {
+      notesElement.innerHTML =
+        "<li>本ページはアフィリエイト広告を利用しています。</li>" +
+        "<li>ライブ取得に失敗した場合は、楽天アプリ設定と GitHub Secrets を見直してください。</li>" +
+        "<li>予約前に楽天トラベル側の最新情報をご確認ください。</li>";
+    }
+  }
+
   function setStatus(page, message, subMessage) {
     const messageElement = page.querySelector("[data-status-message]");
     const subElement = page.querySelector("[data-status-sub]");
@@ -772,6 +796,25 @@
 
   function normalizeError(error) {
     return error && error.message ? error.message : "不明なエラーが発生しました。";
+  }
+
+  function extractApiError(payload) {
+    if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+      return null;
+    }
+    const errors = payload.errors;
+    if (!errors || typeof errors !== "object") {
+      return null;
+    }
+    const errorCode = findFirstValue(errors, "errorCode", "code");
+    const errorMessage = findFirstValue(errors, "errorMessage", "message");
+    if (!errorCode && !errorMessage) {
+      return null;
+    }
+    if (errorCode && errorMessage) {
+      return `楽天APIエラー: ${errorMessage} (code: ${errorCode})`;
+    }
+    return `楽天APIエラー: ${errorMessage || errorCode}`;
   }
 
   function escapeHtml(value) {
