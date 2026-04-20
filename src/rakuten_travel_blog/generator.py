@@ -12,13 +12,16 @@ def build_live_articles(
     client: RakutenTravelClient,
     today: date,
     generated_at: datetime,
-) -> list[Article]:
+) -> tuple[list[Article], dict[str, str]]:
     articles: list[Article] = []
+    errors: dict[str, str] = {}
     for topic in topics:
-        article = build_article_for_topic(topic, client, today, generated_at)
+        article, error = build_article_for_topic(topic, client, today, generated_at)
         if article:
             articles.append(article)
-    return articles
+        elif error:
+            errors[topic.slug] = error
+    return articles, errors
 
 
 def build_article_for_topic(
@@ -26,9 +29,16 @@ def build_article_for_topic(
     client: RakutenTravelClient,
     today: date,
     generated_at: datetime,
-) -> Article | None:
+) -> tuple[Article | None, str | None]:
     checkin_date, checkout_date = determine_stay_dates(today, topic.stay_strategy)
-    seed_nodes = fetch_seed_nodes(topic, client)
+    try:
+        seed_nodes = fetch_seed_nodes(topic, client)
+    except RakutenAPIError as exc:
+        return None, f"候補ホテルの取得に失敗しました: {exc}"
+
+    if not seed_nodes:
+        return None, "候補ホテルが見つかりませんでした。"
+
     selected: list[HotelRecord] = []
 
     for seed_rank, raw_hotel in enumerate(seed_nodes, start=1):
@@ -79,7 +89,7 @@ def build_article_for_topic(
         selected.append(record)
 
     if not selected:
-        return None
+        return None, "空室ありの候補が見つかりませんでした。"
 
     selected.sort(key=lambda item: (-item.score, item.displayed_charge or 999999))
     hotels = selected[: topic.top_n]
@@ -100,20 +110,23 @@ def build_article_for_topic(
         "本ページはアフィリエイト広告を利用しています。",
     ]
 
-    return Article(
-        slug=topic.slug,
-        title=title,
-        headline=topic.headline,
-        description=description,
-        topic_description=topic.description,
-        checkin_date=checkin_date,
-        checkout_date=checkout_date,
-        adult_num=topic.adult_num,
-        child_num=topic.child_num,
-        focus_label=topic.focus_label,
-        generated_at=generated_at,
-        hotels=hotels,
-        notes=notes,
+    return (
+        Article(
+            slug=topic.slug,
+            title=title,
+            headline=topic.headline,
+            description=description,
+            topic_description=topic.description,
+            checkin_date=checkin_date,
+            checkout_date=checkout_date,
+            adult_num=topic.adult_num,
+            child_num=topic.child_num,
+            focus_label=topic.focus_label,
+            generated_at=generated_at,
+            hotels=hotels,
+            notes=notes,
+        ),
+        None,
     )
 
 
