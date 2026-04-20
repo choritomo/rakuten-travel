@@ -110,16 +110,57 @@ def write_index_page(
     body = f"""
 <main class="shell">
   {build_banner}
-  <section class="hero">
-    <p class="eyebrow">{escape(str(site_config["hero_badge"]))}</p>
-    <h1>{escape(str(site_config["site_name"]))}</h1>
-    <p class="hero-copy">{escape(str(site_config["site_subtitle"]))}</p>
-    <div class="hero-meta">
-      {hero_meta}
+  <section class="hero hero-grid">
+    <div class="hero-main">
+      <p class="eyebrow">{escape(str(site_config["hero_badge"]))}</p>
+      <h1>{escape(str(site_config["site_name"]))}</h1>
+      <p class="hero-copy">{escape(str(site_config["site_subtitle"]))}</p>
+      <div class="hero-meta">
+        {hero_meta}
+      </div>
+      <div class="hero-actions">
+        <a class="primary-link" href="#topics">公開ページを見る</a>
+        <a class="ghost-link ghost-link-light" href="#how-it-works">仕組みを見る</a>
+      </div>
     </div>
+    <aside class="hero-aside">
+      <div class="hero-aside-card">
+        <p class="micro-label">Editorial Desk</p>
+        <h2>直前予約の意思決定を、最短で。</h2>
+        <p>空室確認、比較軸、予約導線をひとつの紙面にまとめ、見た瞬間に候補を絞れる構成にしています。</p>
+      </div>
+      <div class="hero-stat-grid">
+        <article class="hero-stat">
+          <span class="hero-stat-value">{len(article_map):02d}</span>
+          <span class="hero-stat-label">公開テーマ</span>
+        </article>
+        <article class="hero-stat">
+          <span class="hero-stat-value">{escape(mode_label)}</span>
+          <span class="hero-stat-label">取得元</span>
+        </article>
+        <article class="hero-stat">
+          <span class="hero-stat-value">Daily</span>
+          <span class="hero-stat-label">更新前提</span>
+        </article>
+      </div>
+    </aside>
   </section>
-  <section class="info-grid">
-    <article class="panel">
+  <section class="feature-strip">
+    <article class="feature-chip">
+      <p class="micro-label">Freshness</p>
+      <strong>朝の更新で、直前需要に寄せる</strong>
+    </article>
+    <article class="feature-chip">
+      <p class="micro-label">Decision</p>
+      <strong>評価・価格・空室を同じ視線で比較</strong>
+    </article>
+    <article class="feature-chip">
+      <p class="micro-label">Flow</p>
+      <strong>楽天トラベルへそのまま移動して確認</strong>
+    </article>
+  </section>
+  <section class="info-grid" id="how-it-works">
+    <article class="panel panel-emphasis">
       <h2>無料で回す設計</h2>
       <p>{escape(str(site_config["site_description"]))}</p>
       <p>楽天APIは自宅PCから取得し、生成済みのHTMLだけをGitHub Pagesへ公開します。公開先ではAPIを叩かないので、PCがオフでもページ自体は見られます。</p>
@@ -131,12 +172,19 @@ def write_index_page(
       <p>更新できたテーマ: {len(article_map)} / {len(topics)}</p>
     </article>
   </section>
-  <section class="panel">
-    <h2>運用のコツ</h2>
-    <p>無料のまま続けるなら、PCはシャットダウンではなくスリープ運用にして、タスクスケジューラで夜間に起こして更新するのが現実的です。</p>
-    <p>iPhoneからは遠隔操作アプリで状態確認や再実行ができます。</p>
+  <section class="editorial-band">
+    <article class="panel panel-soft">
+      <p class="micro-label">Operations</p>
+      <h2>毎日回すなら、運用は軽く。</h2>
+      <p>PCはスリープ運用、更新はタスクスケジューラ、自分は iPhone で確認だけ。人がやる作業を最小限に寄せています。</p>
+    </article>
+    <article class="panel panel-soft">
+      <p class="micro-label">Positioning</p>
+      <h2>勝ち筋は「検索意図の濃さ」です。</h2>
+      <p>温泉、子連れ、朝食高評価のように条件がはっきりしたテーマだけを並べ、予約直前の比較ページとして機能するようにしています。</p>
+    </article>
   </section>
-  <section class="section-head">
+  <section class="section-head" id="topics">
     <div>
       <p class="eyebrow">Topics</p>
       <h2>公開ページ</h2>
@@ -206,16 +254,29 @@ def render_article_body(
     mode_copy = "楽天APIの実データです。" if build_mode == "live" else "サンプルデータです。"
     return f"""
 <main class="shell article-shell">
-  <section class="hero compact">
-    <p class="eyebrow">Travel Snapshot</p>
-    <h1>{escape(article.title)}</h1>
-    <p class="hero-copy">{escape(article.description)}</p>
-    <div class="hero-meta">
-      {render_condition_pills(article)}
+  <section class="hero compact hero-grid article-hero">
+    <div class="hero-main">
+      <p class="eyebrow">Travel Snapshot</p>
+      <h1>{escape(article.title)}</h1>
+      <p class="hero-copy">{escape(article.description)}</p>
+      <div class="hero-meta">
+        {render_condition_pills(article)}
+      </div>
     </div>
+    <aside class="hero-aside">
+      <div class="hero-aside-card">
+        <p class="micro-label">Trip Brief</p>
+        <h2>{escape(article.focus_label)}で候補を厳選</h2>
+        <ul class="brief-list">
+          <li><span>公開候補</span><strong>{len(article.hotels)}件</strong></li>
+          <li><span>更新状態</span><strong>{escape(mode_copy)}</strong></li>
+          <li><span>データ時点</span><strong>{escape(format_jp_datetime(article.generated_at))}</strong></li>
+        </ul>
+      </div>
+    </aside>
   </section>
-  <section class="info-grid">
-    <article class="panel">
+  <section class="info-grid info-grid-rich">
+    <article class="panel panel-emphasis">
       <h2>選定ロジック</h2>
       <p>{escape(topic.description)}</p>
       <p>{escape(topic.focus_label)}、総合評価、口コミ件数、料金感をまとめて比較しています。</p>
@@ -232,6 +293,10 @@ def render_article_body(
       <p class="eyebrow">Hotels</p>
       <h2>候補ホテル</h2>
     </div>
+  </section>
+  <section class="panel panel-soft article-summary">
+    <p class="micro-label">How To Read</p>
+    <p>各カードでは、最初に見るべき評価軸、その宿を選ぶ理由、アクセスの要点、最後に予約導線までを一続きで整理しています。</p>
   </section>
   <section class="hotel-list">
     {hotel_cards}
@@ -256,14 +321,23 @@ def render_unavailable_body(
     mode_copy = "サンプルモード" if build_mode == "sample" else "ライブ取得モード"
     return f"""
 <main class="shell article-shell">
-  <section class="hero compact">
-    <p class="eyebrow">Travel Snapshot</p>
-    <h1>{escape(topic.headline)}</h1>
-    <p class="hero-copy">{escape(topic.description)}</p>
-    <div class="hero-meta">
-      <span>{escape(mode_copy)}</span>
-      <span>生成日時 {escape(format_jp_datetime(generated_at))}</span>
+  <section class="hero compact hero-grid article-hero">
+    <div class="hero-main">
+      <p class="eyebrow">Travel Snapshot</p>
+      <h1>{escape(topic.headline)}</h1>
+      <p class="hero-copy">{escape(topic.description)}</p>
+      <div class="hero-meta">
+        <span>{escape(mode_copy)}</span>
+        <span>生成日時 {escape(format_jp_datetime(generated_at))}</span>
+      </div>
     </div>
+    <aside class="hero-aside">
+      <div class="hero-aside-card">
+        <p class="micro-label">Status</p>
+        <h2>このテーマは次回更新待ちです。</h2>
+        <p>条件が厳しいと、一時的に候補がゼロになることがあります。次回の自動更新で戻る場合があります。</p>
+      </div>
+    </aside>
   </section>
   <section class="info-grid">
     <article class="panel">
@@ -299,7 +373,11 @@ def render_page(
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>{escape(title)}</title>
   <meta name="description" content="{escape(description)}"/>
+  <meta name="theme-color" content="#173a37"/>
   <link rel="canonical" href="{escape(canonical_url)}"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="{escape(css_href)}"/>
 </head>
 <body>
@@ -336,9 +414,13 @@ def render_topic_card(
         else f"<p class=\"muted-note\">未取得: {escape(topic_error or '次回更新待ち')}</p>"
     )
     title = article.title if article else topic.headline
+    status = "LIVE" if article and build_mode == "live" else "SAMPLE" if article else "WAIT"
     return f"""
 <article class="article-card">
-  <p class="eyebrow">Static Page</p>
+  <div class="card-kicker">
+    <p class="eyebrow">Static Page</p>
+    <span class="status-pill">{status}</span>
+  </div>
   <h3><a href="posts/{escape(topic.slug)}/">{escape(title)}</a></h3>
   <p>{escape(subtitle)}</p>
   {meta}
@@ -368,20 +450,36 @@ def render_hotel_card(hotel: HotelRecord, rank: int, focus_label: str) -> str:
     access_text = hotel.access or hotel.address
     area_name = hotel.area_name or "Rakuten Travel"
     detail_text = hotel.special or "詳細は予約ページでご確認ください。"
+    meta_items = []
+    if hotel.nearest_station:
+        meta_items.append(f'<div class="meta-item"><span>最寄り</span><strong>{escape(hotel.nearest_station)}</strong></div>')
+    if access_text:
+        meta_items.append(f'<div class="meta-item"><span>アクセス</span><strong>{escape(access_text)}</strong></div>')
+    if hotel.address:
+        meta_items.append(f'<div class="meta-item"><span>エリア</span><strong>{escape(hotel.address)}</strong></div>')
     return f"""
 <article class="hotel-card">
   <div class="hotel-media">
     <span class="rank-badge">#{rank}</span>
     {image_html}
+    <div class="hotel-media-overlay">
+      <span>{escape(area_name)}</span>
+      {f'<strong>{hotel.displayed_charge:,}円〜</strong>' if hotel.displayed_charge else '<strong>価格は予約画面で確認</strong>'}
+    </div>
   </div>
   <div class="hotel-content">
     <p class="eyebrow">{escape(area_name)}</p>
     <h3>{escape(hotel.name)}</h3>
     <div class="badge-row">{"".join(badges)}</div>
     <p class="selection-reason">{escape(hotel.selection_reason or "")}</p>
-    <p>{escape(detail_text)}</p>
-    {f'<div class="hotel-meta"><p>{escape(access_text)}</p></div>' if access_text else ''}
-    <a class="primary-link" href="{escape(hotel.booking_url)}" target="_blank" rel="noopener noreferrer">楽天トラベルで確認</a>
+    <p class="hotel-description">{escape(detail_text)}</p>
+    <div class="hotel-meta-grid">
+      {"".join(meta_items)}
+    </div>
+    <div class="hotel-footer">
+      <p class="micro-label">Rakuten Travel Link</p>
+      <a class="primary-link" href="{escape(hotel.booking_url)}" target="_blank" rel="noopener noreferrer">楽天トラベルで確認</a>
+    </div>
   </div>
 </article>
 """
