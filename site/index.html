@@ -5,7 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>週末旅レーダー</title>
   <meta name="description" content="楽天トラベルAPIの空室・ランキング・詳細データを使い、自宅PCで記事HTMLを生成してGitHub Pagesへ無料寄りで公開するための静的サイトです。"/>
+  <meta name="theme-color" content="#173a37"/>
   <link rel="canonical" href="https://choritomo.github.io/rakuten-travel/"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="assets/site.css"/>
 </head>
 <body>
@@ -16,20 +20,61 @@
   
 <main class="shell">
   
-  <section class="hero">
-    <p class="eyebrow">Rakuten Travel Auto Blog</p>
-    <h1>週末旅レーダー</h1>
-    <p class="hero-copy">楽天トラベルAPIで、直前空室がある宿だけを毎日拾う特化ブログ</p>
-    <div class="hero-meta">
-      
+  <section class="hero hero-grid">
+    <div class="hero-main">
+      <p class="eyebrow">Rakuten Travel Auto Blog</p>
+      <h1>週末旅レーダー</h1>
+      <p class="hero-copy">楽天トラベルAPIで、直前空室がある宿だけを毎日拾う特化ブログ</p>
+      <div class="hero-meta">
+        
       <span>完全無料寄り</span>
       <span>PCで自動取得</span>
       <span>GitHub Pages公開</span>
     
+      </div>
+      <div class="hero-actions">
+        <a class="primary-link" href="#topics">公開ページを見る</a>
+        <a class="ghost-link ghost-link-light" href="#how-it-works">仕組みを見る</a>
+      </div>
     </div>
+    <aside class="hero-aside">
+      <div class="hero-aside-card">
+        <p class="micro-label">Editorial Desk</p>
+        <h2>直前予約の意思決定を、最短で。</h2>
+        <p>空室確認、比較軸、予約導線をひとつの紙面にまとめ、見た瞬間に候補を絞れる構成にしています。</p>
+      </div>
+      <div class="hero-stat-grid">
+        <article class="hero-stat">
+          <span class="hero-stat-value">03</span>
+          <span class="hero-stat-label">公開テーマ</span>
+        </article>
+        <article class="hero-stat">
+          <span class="hero-stat-value">楽天APIの実データ</span>
+          <span class="hero-stat-label">取得元</span>
+        </article>
+        <article class="hero-stat">
+          <span class="hero-stat-value">Daily</span>
+          <span class="hero-stat-label">更新前提</span>
+        </article>
+      </div>
+    </aside>
   </section>
-  <section class="info-grid">
-    <article class="panel">
+  <section class="feature-strip">
+    <article class="feature-chip">
+      <p class="micro-label">Freshness</p>
+      <strong>朝の更新で、直前需要に寄せる</strong>
+    </article>
+    <article class="feature-chip">
+      <p class="micro-label">Decision</p>
+      <strong>評価・価格・空室を同じ視線で比較</strong>
+    </article>
+    <article class="feature-chip">
+      <p class="micro-label">Flow</p>
+      <strong>楽天トラベルへそのまま移動して確認</strong>
+    </article>
+  </section>
+  <section class="info-grid" id="how-it-works">
+    <article class="panel panel-emphasis">
       <h2>無料で回す設計</h2>
       <p>楽天トラベルAPIの空室・ランキング・詳細データを使い、自宅PCで記事HTMLを生成してGitHub Pagesへ無料寄りで公開するための静的サイトです。</p>
       <p>楽天APIは自宅PCから取得し、生成済みのHTMLだけをGitHub Pagesへ公開します。公開先ではAPIを叩かないので、PCがオフでもページ自体は見られます。</p>
@@ -37,16 +82,23 @@
     <article class="panel">
       <h2>今回の更新</h2>
       <p>取得元: 楽天APIの実データ</p>
-      <p>生成日時: 2026年4月20日 00:14</p>
+      <p>生成日時: 2026年4月20日 21:40</p>
       <p>更新できたテーマ: 3 / 3</p>
     </article>
   </section>
-  <section class="panel">
-    <h2>運用のコツ</h2>
-    <p>無料のまま続けるなら、PCはシャットダウンではなくスリープ運用にして、タスクスケジューラで夜間に起こして更新するのが現実的です。</p>
-    <p>iPhoneからは遠隔操作アプリで状態確認や再実行ができます。</p>
+  <section class="editorial-band">
+    <article class="panel panel-soft">
+      <p class="micro-label">Operations</p>
+      <h2>毎日回すなら、運用は軽く。</h2>
+      <p>PCはスリープ運用、更新はタスクスケジューラ、自分は iPhone で確認だけ。人がやる作業を最小限に寄せています。</p>
+    </article>
+    <article class="panel panel-soft">
+      <p class="micro-label">Positioning</p>
+      <h2>勝ち筋は「検索意図の濃さ」です。</h2>
+      <p>温泉、子連れ、朝食高評価のように条件がはっきりしたテーマだけを並べ、予約直前の比較ページとして機能するようにしています。</p>
+    </article>
   </section>
-  <section class="section-head">
+  <section class="section-head" id="topics">
     <div>
       <p class="eyebrow">Topics</p>
       <h2>公開ページ</h2>
@@ -55,7 +107,10 @@
   <section class="card-grid">
     
 <article class="article-card">
-  <p class="eyebrow">Static Page</p>
+  <div class="card-kicker">
+    <p class="eyebrow">Static Page</p>
+    <span class="status-pill">LIVE</span>
+  </div>
   <h3><a href="posts/last-minute-onsen/">4/25に泊まれる空室あり温泉宿3選</a></h3>
   <p>4/25チェックインで空室を確認できた直前でも狙いやすい温泉宿を、楽天トラベルAPIの最新データから毎日更新しています。</p>
   <p class="muted-note">更新済み: 2026年4月25日 チェックイン</p>
@@ -67,7 +122,10 @@
 
 
 <article class="article-card">
-  <p class="eyebrow">Static Page</p>
+  <div class="card-kicker">
+    <p class="eyebrow">Static Page</p>
+    <span class="status-pill">LIVE</span>
+  </div>
   <h3><a href="posts/family-breakfast/">4/25に泊まれる朝食評価が高いファミリー向けホテル3選</a></h3>
   <p>4/25チェックインで空室を確認できた朝食重視の家族旅行向けホテルを、楽天トラベルAPIの最新データから毎日更新しています。</p>
   <p class="muted-note">更新済み: 2026年4月25日 チェックイン</p>
@@ -79,7 +137,10 @@
 
 
 <article class="article-card">
-  <p class="eyebrow">Static Page</p>
+  <div class="card-kicker">
+    <p class="eyebrow">Static Page</p>
+    <span class="status-pill">LIVE</span>
+  </div>
   <h3><a href="posts/premium-getaway/">4/24に空室がある高評価ご褒美ホテル3選</a></h3>
   <p>4/24チェックインで空室を確認できた単価の高いご褒美ホテルを、楽天トラベルAPIの最新データから毎日更新しています。</p>
   <p class="muted-note">更新済み: 2026年4月24日 チェックイン</p>
