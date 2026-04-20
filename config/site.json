@@ -1,7 +1,7 @@
 {
   "site_name": "週末旅レーダー",
   "site_subtitle": "楽天トラベルAPIで、直前空室がある宿だけを毎日拾う特化ブログ",
-  "site_description": "楽天トラベルAPIの空室・ランキング・詳細データを使い、予約意図が強いロングテール記事を無料寄りで自動生成するための静的サイトです。",
+  "site_description": "楽天トラベルAPIの空室・ランキング・詳細データを使い、自宅PCで記事HTMLを生成してGitHub Pagesへ無料寄りで公開するための静的サイトです。",
   "base_url": "https://choritomo.github.io/rakuten-travel",
   "hero_badge": "Rakuten Travel Auto Blog",
   "affiliate_disclosure": "本ページはアフィリエイト広告を利用しています。",
