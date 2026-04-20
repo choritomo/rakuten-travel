@@ -1,136 +1,194 @@
-# 楽天トラベル無料Webアプリ 運用手順
+# 楽天トラベル PC実行型 運用手順
 
 ## 1. この構成でできること
 
-この構成は、GitHub Pages に静的サイトを置き、ページを開いたタイミングでブラウザから楽天トラベルAPIへアクセスして最新候補を表示する方式です。
+この構成は、`楽天APIの取得はPC`、`公開はGitHub Pages` に分ける方式です。
 
-目的:
+- 無料で公開を続けやすい
+- 楽天の `API/バックエンドサービス` を使える
+- 公開ページは PC がオフでも見られる
 
-- 完全無料で始める
-- 自分のPCがオフでも公開を止めない
-- 楽天トラベルの直前空室を狙う
+更新だけはPCが必要ですが、サイト自体は GitHub Pages に残るので止まりません。
 
-## 2. 先に理解しておく注意点
+## 2. 先に理解しておくこと
 
-- `API/バックエンドサービス` ではなく `Webアプリケーション` を使う
-- 楽天APIキーはブラウザ側で利用するため公開ページから見える
-- その代わり、許可IPの問題を避けられる
+- 完全無料のまま `PCの電源オフでも更新実行` は基本的に難しいです
+- ただし `PCをスリープ` にしておけば、Windowsタスクスケジューラで自動更新しやすいです
+- iPhoneからは `遠隔操作` と `結果確認` はできます
 
-これは `完全無料` と `PCオフでも動く` を優先したための割り切りです。
+現実的な運用は次の形です。
+
+- 自宅PCは夜だけスリープ
+- 深夜にタスクスケジューラで自動更新
+- 公開先はGitHub Pages
+- トラブル時だけiPhoneから遠隔操作
 
 ## 3. 楽天側でやること
 
-### 新しいアプリを作る
+楽天ウェブサービスで `API/バックエンドサービス` のアプリを使います。
 
-既に `API/バックエンドサービス` を作っていても、無料運用用には `Webアプリケーション` を作り直すのがおすすめです。
+### 入力の目安
 
-入力例:
+- アプリケーション名: `旅レーダー`
+- アプリケーションURL: `https://github.com/choritomo/rakuten-travel`
+- アプリケーションタイプ: `API/バックエンドサービス`
+- 許可されたIPアドレス: このPCのグローバルIP
 
-- アプリケーション名: `週末旅レーダー`
-- アプリケーションURL: `https://choritomo.github.io/rakuten-travel/`
-- アプリケーションタイプ: `Webアプリケーション`
-- 許可されたWebサイト: `choritomo.github.io`
-- アプリケーションの説明:
+### 注意
+
+- 自宅回線のグローバルIPが変わったら、楽天側の許可IPも更新が必要です
+- GitHub Actions から楽天APIは叩きません
+
+## 4. GitHub 側でやること
+
+### 4-1. GitHub Pages
+
+1. リポジトリを `public` にする
+2. `Settings > Pages`
+3. `Build and deployment` の Source を `GitHub Actions` にする
+
+このリポジトリでは、`site/` が更新されると Actions が Pages へデプロイします。
+
+### 4-2. GitHub Token
+
+`Settings > Developer settings > Personal access tokens > Fine-grained tokens` で token を作ります。
+
+最低限ほしい権限:
+
+- Repository access: `choritomo/rakuten-travel`
+- Repository permissions: `Contents` を `Read and write`
+
+作った token は `.env` の `GITHUB_TOKEN` に入れます。
+
+## 5. .env を作る
+
+ルートに `.env` を作ります。`.env.example` をそのまま真似して大丈夫です。
+
+```env
+RAKUTEN_APPLICATION_ID=ここに楽天のApplication ID
+RAKUTEN_ACCESS_KEY=ここに楽天のAccess Key
+RAKUTEN_AFFILIATE_ID=ここに楽天アフィリエイトID
+GITHUB_TOKEN=ここにGitHub token
+GITHUB_REPOSITORY=choritomo/rakuten-travel
+GITHUB_BRANCH=main
+GITHUB_PAGES_DIR=site
+SITE_BASE_URL=https://choritomo.github.io/rakuten-travel
+```
+
+## 6. 初回確認
+
+### 見た目だけ確認
+
+```bash
+python scripts/generate_site.py --sample-data --output-dir dist
+```
+
+### 楽天APIでローカル生成
+
+```bash
+python scripts/update_site.py --build-only
+```
+
+### 公開まで一気に反映
+
+```bash
+python scripts/update_site.py
+```
+
+成功すると次の流れになります。
+
+1. `dist/` が更新される
+2. GitHub リポジトリの `site/` が更新される
+3. GitHub Actions が走る
+4. [https://choritomo.github.io/rakuten-travel/](https://choritomo.github.io/rakuten-travel/) が更新される
+
+## 7. タスクスケジューラ設定
+
+Windows の `タスク スケジューラ` で新しいタスクを作ります。
+
+### おすすめ設定
+
+- 名前: `Rakuten Travel Update`
+- 実行タイミング: 毎日 5:30
+- `最上位の特権で実行する`
+- `スケジュールされた時刻に実行できなかった場合はできるだけ早く実行する`
+- `タスクを実行するためにスリープを解除する`
+
+### プログラム
+
+- プログラム: `powershell.exe`
+- 引数:
 
 ```text
-楽天トラベルAPIを利用して、空室のあるホテル情報を取得し、
-条件別の比較ページをGitHub Pages上で表示するためのWebアプリです。
+-ExecutionPolicy Bypass -File "C:\Users\tomoc\Desktop\codex\楽天トラベル\scripts\run_update.ps1"
 ```
 
-## 4. GitHub Secrets の設定
+- 開始:
 
-GitHub リポジトリの `Settings > Secrets and variables > Actions` に次を登録します。
-
-- `RAKUTEN_APPLICATION_ID`
-- `RAKUTEN_ACCESS_KEY`
-- `RAKUTEN_AFFILIATE_ID`
-
-## 5. GitHub Pages の設定
-
-無料で GitHub Pages を使うなら、先にリポジトリを `public` にします。
-
-1. `Settings > Pages` を開く
-2. `Build and deployment` の Source を `GitHub Actions` にする
-3. まだ `private` なら `Settings > General > Danger Zone > Change repository visibility` から `public` に変える
-4. `Actions > Generate travel site > Run workflow` を押す
-5. `Deploy to GitHub Pages` が通るのを待つ
-
-## 6. ローカルでの確認
-
-### サイト生成
-
-```bash
-python scripts/generate_site.py --output-dir dist
+```text
+C:\Users\tomoc\Desktop\codex\楽天トラベル
 ```
 
-### 表示確認
+## 8. iPhone からの操作
 
-```bash
-python -m http.server 8000 --directory dist
-```
+### できること
 
-ブラウザで `http://localhost:8000` を開きます。
+- Chrome Remote Desktop で自宅PCに入る
+- GitHub の Actions 成功/失敗を見る
+- 必要なら `scripts\run_update.ps1` を手動実行する
 
-## 7. どこがライブ更新されるか
+### 無料でおすすめ
 
-- トップページ: 固定の案内とテーマ一覧
-- 各記事ページ: 閲覧時に楽天APIから最新候補を取得
+- `Chrome Remote Desktop`
+- `Tailscale + Windows標準RDP` もありですが、最初は少し難しめです
 
-つまり、定期実行しなくてもデータは最新寄りになります。
+### できないことに近いもの
 
-## 8. テーマの増やし方
+- PCが完全に電源オフの状態から、必ずiPhoneだけで起動する
 
-`config/topics.json` を編集します。
+これは `Wake-on-LAN` と BIOS/ルーター設定が必要で、回線によってはうまくいきません。最初は `スリープ運用` が安全です。
 
-おすすめ:
+## 9. 困ったとき
 
-- `空室あり温泉`
-- `朝食高評価`
-- `子連れ`
-- `カップル`
-- `高評価ご褒美ホテル`
-
-最初はテーマを増やしすぎず、3〜5本に絞る方が安定します。
-
-## 9. 完全無料構成の勝ち方
-
-この構成は SEO だけで勝つより、`直前需要` を狙う方が向いています。
-
-おすすめ順:
-
-1. 週末直前
-2. 連休直前
-3. 夏休み直前
-4. 子連れ条件
-5. 温泉条件
-
-## 10. 困ったとき
-
-### 楽天APIが表示されない
-
-よくある原因:
-
-- リポジトリが `private` のまま
-- Webアプリではなくバックエンドアプリのキーを使っている
-- 許可されたWebサイトが違う
-- GitHub Pages のURLと楽天の設定がずれている
-- `900001` や `900003` のような番号のホテルに飛ぶなら、ライブ取得ではなくデモ表示になっている
-
-### GitHub Pages は見えるのに候補が出ない
+### 楽天APIで失敗する
 
 確認ポイント:
 
-- ブラウザのコンソールにエラーが出ていないか
-- `choritomo.github.io` が許可サイトに入っているか
-- `RAKUTEN_APPLICATION_ID` と `RAKUTEN_ACCESS_KEY` が入っているか
+- 楽天アプリが `API/バックエンドサービス` になっているか
+- 許可IPが今の回線のグローバルIPと合っているか
+- `.env` の楽天キーに打ち間違いがないか
 
-## 11. 収益が出たら次にやること
+### GitHub には公開されない
 
-完全無料の次の段階では、次を順番に足すと強いです。
+確認ポイント:
 
-1. サーバ側の事前生成
-2. Search Console 連携
-3. クリック率の高いテーマに絞る
-4. レンタカーや観光体験も足す
+- `.env` の `GITHUB_TOKEN` が入っているか
+- token に `Contents: Read and write` があるか
+- `GITHUB_REPOSITORY=choritomo/rakuten-travel` になっているか
+- GitHub Actions の `Deploy published site` が失敗していないか
 
-最初は無料で回し、数字が出たら強化するのが安全です。
+### サイトは見えるが内容が古い
+
+確認ポイント:
+
+- タスクスケジューラの最終実行結果
+- PCがスリープ解除できているか
+- GitHub Actions の実行時刻
+
+## 10. 収益を伸ばす順番
+
+最初はテーマを増やしすぎず、次の順で試すのがおすすめです。
+
+1. `今週末の空室あり温泉`
+2. `子連れで朝食評価が高いホテル`
+3. `連休直前の高評価宿`
+4. `レンタカー` や `観光体験` の横展開
+
+## 参考
+
+- [楽天トラベル施設情報API](https://webservice.rakuten.co.jp/documentation/hotel-detail-search)
+- [楽天トラベル施設検索API](https://webservice.rakuten.co.jp/documentation/simple-hotel-search)
+- [楽天トラベル空室検索API](https://webservice.rakuten.co.jp/documentation/vacant-hotel-search)
+- [楽天トラベルランキングAPI](https://webservice.rakuten.co.jp/documentation/hotel-ranking)
+- [Rakuten Web Service クレジット表示](https://webservice.rakuten.co.jp/guide/credit)
+- [GitHub Pages limits](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits)
